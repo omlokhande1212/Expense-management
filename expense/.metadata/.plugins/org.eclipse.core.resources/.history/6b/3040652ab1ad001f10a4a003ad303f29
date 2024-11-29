@@ -1,0 +1,82 @@
+<%@ page import="java.sql.*" %>
+<%@ page contentType="text/html;charset=UTF-8" language="java" %>
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Expense List</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+</head>
+<body>
+<div class="container mt-5">
+    <h2 class="text-center">Expense Details</h2>
+    <table class="table table-striped table-bordered">
+        <thead>
+            <tr>
+                <th>Expense ID</th>
+                <th>User ID</th>
+                <th>Budget ID</th>
+                <th>Amount</th>
+                <th>Date</th>
+                <th>Category</th>
+                <th>Description</th>
+                <th>Created At</th>
+            </tr>
+        </thead>
+        <tbody>
+            <%
+                // Database connection parameters
+                String dbURL = "jdbc:mysql://localhost:3306/your_database";
+                String dbUser = "your_username";
+                String dbPassword = "your_password";
+
+                Connection conn = null;
+                Statement stmt = null;
+                ResultSet rs = null;
+
+                try {
+                    Class.forName("com.mysql.cj.jdbc.Driver"); // Load MySQL driver
+                    conn = DriverManager.getConnection(dbURL, dbUser, dbPassword);
+                    stmt = conn.createStatement();
+                    String query = "SELECT * FROM expenses"; // Query your expenses table
+                    rs = stmt.executeQuery(query);
+
+                    while (rs.next()) {
+                        int expenseId = rs.getInt("expense_id");
+                        int userId = rs.getInt("user_id");
+                        int budgetId = rs.getInt("budget_id");
+                        double amount = rs.getDouble("amount");
+                        Date date = rs.getDate("date");
+                        String category = rs.getString("category");
+                        String description = rs.getString("description");
+                        Timestamp createdAt = rs.getTimestamp("created_at");
+
+                        %>
+                        <tr>
+                            <td><%= expenseId %></td>
+                            <td><%= userId %></td>
+                            <td><%= budgetId %></td>
+                            <td><%= amount %></td>
+                            <td><%= date %></td>
+                            <td><%= category %></td>
+                            <td><%= description %></td>
+                            <td><%= createdAt %></td>
+                        </tr>
+                        <%
+                    }
+                } catch (Exception e) {
+                    out.println("<tr><td colspan='8' class='text-danger text-center'>Error: " + e.getMessage() + "</td></tr>");
+                } finally {
+                    try {
+                        if (rs != null) rs.close();
+                        if (stmt != null) stmt.close();
+                        if (conn != null) conn.close();
+                    } catch (SQLException ex) {
+                        out.println("<tr><td colspan='8' class='text-danger text-center'>Error closing resources: " + ex.getMessage() + "</td></tr>");
+                    }
+                }
+            %>
+        </tbody>
+    </table>
+</div>
+</body>
+</html>

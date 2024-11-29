@@ -1,0 +1,58 @@
+package com.expense;
+
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+
+@WebServlet("/register")
+public class RegisterServlet extends HttpServlet {
+    private static final String JDBC_URL = "jdbc:mysql://localhost:3306/ExpenseManagementSystem";
+    private static final String JDBC_USER = "root";
+    private static final String JDBC_PASSWORD = "Root@123";
+
+    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        response.setContentType("application/json");
+        PrintWriter out = response.getWriter();
+
+        String username = request.getParameter("username");
+        String email = request.getParameter("email");
+        String password = request.getParameter("password");
+        String birthdate = request.getParameter("birthdate");
+        String gender = request.getParameter("gender");
+        String role = request.getParameter("role");
+
+        try (Connection conn = DriverManager.getConnection(JDBC_URL, JDBC_USER, JDBC_PASSWORD)) {
+            // Check if username exists
+            PreparedStatement checkStmt = conn.prepareStatement("SELECT * FROM users WHERE username = ?");
+            checkStmt.setString(1, username);
+            ResultSet rs = checkStmt.executeQuery();
+
+            if (rs.next()) {
+                out.write("{\"status\":\"error\", \"message\":\"Username already exists\"}");
+            } else {
+                // Insert new user
+                PreparedStatement insertStmt = conn.prepareStatement("INSERT INTO users (username, email, password, birthdate, gender, role) VALUES (?, ?, ?, ?, ?, ?)");
+                insertStmt.setString(1, username);
+                insertStmt.setString(2, email);
+                insertStmt.setString(3, password);
+                insertStmt.setDate(4, java.sql.Date.valueOf(birthdate));
+                insertStmt.setString(5, gender);
+                insertStmt.setString(6, role);
+
+                int rowsInserted = insertStmt.executeUpdate();
+                if (rowsInserted > 0) {
+                    out.write("{\"status\":\"success\", \"message\":\"Registration successful\"}");
+                } else {
+                    out.write("{\"status\":\"error\", \"message\":\"Registration failed\"}");
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+            out.write("{\"status\":\"error\", \"message\":\"Database error\"}");
+        }
+    }
+}
