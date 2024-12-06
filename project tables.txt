@@ -1,0 +1,60 @@
+
+data base name :-expensemanagementsystem
+----------------------------------------------
+1. USERS Table
+
+       CREATE TABLE Users (
+    user_id INT PRIMARY KEY IDENTITY(1,1),
+    username VARCHAR(50) NOT NULL UNIQUE,
+    email VARCHAR(100) NOT NULL UNIQUE,
+    password VARCHAR(255) NOT NULL,
+    birthdate DATE NOT NULL,
+    gender ENUM('male', 'female', 'other') NOT NULL,
+    role ENUM('user', 'admin') NOT NULL DEFAULT 'user',
+    registration_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+------------------------------------------------------------------------
+
+2. EXPENSES Table
+
+     CREATE TABLE Expenses (
+    expense_id INT PRIMARY KEY IDENTITY(1,1),
+    user_id INT NOT NULL,
+    budget_id INT NULL,
+    amount DECIMAL(10,2) NOT NULL,
+    date DATE NOT NULL,
+    category VARCHAR(50) NOT NULL,
+    description TEXT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (user_id) REFERENCES Users(user_id)
+);
+
+
+------------------------------------------------------------------------
+
+3. MONTHLY_BUDGETS Table
+
+         CREATE TABLE Monthly_Budgets (
+    budget_id INT PRIMARY KEY IDENTITY(1,1),
+    user_id INT NOT NULL,
+    monthly_budget DECIMAL(10,2) NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    date_set DATE NULL,
+    FOREIGN KEY (user_id) REFERENCES Users(user_id)
+);
+
+
+--------------------------------
+
+4. ADMIN Table
+
+CREATE TABLE Admin (
+    id INT PRIMARY KEY IDENTITY(1,1),
+    username VARCHAR(50) NOT NULL UNIQUE,
+    password VARCHAR(255) NOT NULL,
+    email VARCHAR(100) NULL,
+    role VARCHAR(20) DEFAULT 'admin'
+);
+
+
