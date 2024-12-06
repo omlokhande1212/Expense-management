@@ -1,5 +1,7 @@
 
 data base name :-expensemanagementsystem
+user name:- user
+password:-Root@123
 ----------------------------------------------
 1. USERS Table
 
